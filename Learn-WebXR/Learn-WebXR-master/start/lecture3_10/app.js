@@ -5,38 +5,38 @@ import { Stats } from '../../libs/stats.module.js';
 import { CanvasUI } from '../../libs/CanvasUI.js'
 import { ARButton } from '../../libs/ARButton.js';
 import {
-    Constants as MotionControllerConstants,
-    fetchProfile
+	Constants as MotionControllerConstants,
+	fetchProfile
 } from '../../libs/three/jsm/motion-controllers.module.js';
 
 const DEFAULT_PROFILES_PATH = 'https://cdn.jsdelivr.net/npm/@webxr-input-profiles/assets@1.0/dist/profiles';
 const DEFAULT_PROFILE = 'generic-trigger';
 
 class App{
-    constructor(){
-        const container = document.createElement( 'div' );
-        document.body.appendChild( container );
+	constructor(){
+		const container = document.createElement( 'div' );
+		document.body.appendChild( container );
         
         this.clock = new THREE.Clock();
         
-        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
-        
-        this.scene = new THREE.Scene();
+		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+		
+		this.scene = new THREE.Scene();
         
         this.scene.add ( this.camera );
        
-        this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+		this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
 
         const light = new THREE.DirectionalLight( 0xffffff );
         light.position.set( 1, 1, 1 ).normalize();
-        this.scene.add( light );
-            
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
-        this.renderer.setPixelRatio( window.devicePixelRatio );
-        this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.scene.add( light );
+			
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
+		this.renderer.setPixelRatio( window.devicePixelRatio );
+		this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         
-        container.appendChild( this.renderer.domElement );
+		container.appendChild( this.renderer.domElement );
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.target.set(0, 3.5, 0);
@@ -53,7 +53,7 @@ class App{
         this.setupXR();
         
         window.addEventListener('resize', this.resize.bind(this) );
-    }   
+	}	
     
     initScene(){
         this.dummyCam = new THREE.Object3D();
@@ -105,6 +105,7 @@ class App{
         this.renderer.xr.enabled = true; 
         
         const self = this;
+        let controller;
         
         function onConnected( event ) {
             if (self.info === undefined){
@@ -132,22 +133,17 @@ class App{
         }
         
         function onSessionStart(){
-            self.ui.mesh.position.set( 0, -0.5, -1.1 );
+            self.ui.mesh.position.set(0, -0.5, -1.1);
             self.camera.add( self.ui.mesh );
         }
         
         function onSessionEnd(){
             self.camera.remove( self.ui.mesh );
         }
+        
+        const btn = new ARButton( this.renderer, { onSessionStart, onSessionEnd }, 
+            sessionInit: { optionalFeatures: [ 'dom-overlay'], domOverlay: { root: document.body }} );
 
-        const btn = new ARButton( this.renderer, { onSessionStart, onSessionEnd, sessionInit: { optionalFeatures: [ 'dom-overlay' ], domOverlay: { root: document.body } } } ); 
-        
-        const controller = this.renderer.xr.getController( 0 );
-        controller.addEventListener( 'connected', onConnected );
-        
-        this.scene.add( controller );
-        this.controller = controller;
-        
         this.renderer.setAnimationLoop( this.render.bind(this) );
     }
     
@@ -158,19 +154,19 @@ class App{
     }
     
     createMsg( pos, rot ){
-        const msg = `position:${pos.x.toFixed(3)},${pos.y.toFixed(3)},${pos.z.toFixed(3)} rotation:${rot.x.toFixed(2)},${rot.y.toFixed(2)},${rot.z.toFixed(2)}`;
+        const msg = `position:${pos.x.toFixed(2)},${pos.y.toFixed(2)},${pos.z.toFixed(2)} rotation:${rot.x.toFixed(2)},${rot.y.toFixed(2)},${rot.z.toFixed(2)}`;
         return msg;
     }
     
-    render( ) {   
+	render( ) {   
         const dt = this.clock.getDelta();
         this.stats.update();
         this.ui.update();
         if (this.renderer.xr.isPresenting){
             const pos = this.controller.getWorldPosition( this.origin );
-            this.euler.setFromQuaternion( this.controller.getWorldQuaternion( this.quaternion ) );
-            const rot = this.euler;
-            const msg = this.createMsg( pos, rot );
+            this.euler.setFromQuaternion( this.controller.getWorldQuaternion( this.quaternion ));
+            
+            const msg = this.createMsg( pos, this.euler );
             this.ui.updateElement("msg", msg);
         }
         this.renderer.render( this.scene, this.camera );

@@ -13,7 +13,7 @@ class App{
 		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
 		
 		this.scene = new THREE.Scene();
-        
+        //testtesttest//
 		this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
 
         const light = new THREE.DirectionalLight( 0xffffff );

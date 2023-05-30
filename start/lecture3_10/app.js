@@ -5,38 +5,38 @@ import { Stats } from '../../libs/stats.module.js';
 import { CanvasUI } from '../../libs/CanvasUI.js'
 import { ARButton } from '../../libs/ARButton.js';
 import {
-	Constants as MotionControllerConstants,
-	fetchProfile
+    Constants as MotionControllerConstants,
+    fetchProfile
 } from '../../libs/three/jsm/motion-controllers.module.js';
 
 const DEFAULT_PROFILES_PATH = 'https://cdn.jsdelivr.net/npm/@webxr-input-profiles/assets@1.0/dist/profiles';
 const DEFAULT_PROFILE = 'generic-trigger';
 
 class App{
-	constructor(){
-		const container = document.createElement( 'div' );
-		document.body.appendChild( container );
+    constructor(){
+        const container = document.createElement( 'div' );
+        document.body.appendChild( container );
         
         this.clock = new THREE.Clock();
         
-		this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
-		
-		this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
+        
+        this.scene = new THREE.Scene();
         
         this.scene.add ( this.camera );
        
-		this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+        this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
 
         const light = new THREE.DirectionalLight( 0xffffff );
         light.position.set( 1, 1, 1 ).normalize();
-		this.scene.add( light );
-			
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.scene.add( light );
+            
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
+        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         
-		container.appendChild( this.renderer.domElement );
+        container.appendChild( this.renderer.domElement );
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.target.set(0, 3.5, 0);
@@ -53,7 +53,7 @@ class App{
         this.setupXR();
         
         window.addEventListener('resize', this.resize.bind(this) );
-	}	
+    }   
     
     initScene(){
         this.dummyCam = new THREE.Object3D();
@@ -131,25 +131,15 @@ class App{
                 } );
             }
         }
-        //testing more//
+        
         function onSessionStart(){
-            self.ui.mesh.position.set(0, -0.5, -1.1);
-            self.camera.add( self.ui.mesh );
+            
         }
         
         function onSessionEnd(){
-            self.camera.remove( self.ui.mesh );
+            
         }
         
-        const btn = new ARButton( this.renderer, { onSessionStart, onSessionEnd, 
-            sessionInit: { optionalFeatures: [ 'dom-overlay'], domOverlay: { root: document.body }} });
-
-        const controller = this.renderer.xr.getController(0);
-        controller.addEventListener( 'connected', onConnected );
-
-        this.scene.add( controller );
-        this.controller = controller;
-
         this.renderer.setAnimationLoop( this.render.bind(this) );
     }
     
@@ -164,7 +154,7 @@ class App{
         return msg;
     }
     
-	render( ) {   
+    render( ) {   
         const dt = this.clock.getDelta();
         this.stats.update();
         this.ui.update();

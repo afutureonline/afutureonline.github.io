@@ -131,7 +131,7 @@ class App{
                 } );
             }
         }
-        
+        //test//
         function onSessionStart(){
             self.ui.mesh.position.set(0, -0.5, -1.1);
             self.camera.add( self.ui.mesh );

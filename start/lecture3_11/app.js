@@ -61,7 +61,7 @@ class App{
         // Load a GLTF resource
         loader.load(
             // resource URL
-            `Knight2.glb`,
+            `knight2.glb`,
             // called when the resource is loaded
             function ( gltf ) {
                 const object = gltf.scene.children[5];

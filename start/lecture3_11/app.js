@@ -9,30 +9,30 @@ import { Player } from '../../libs/Player.js';
 import { ControllerGestures } from '../../libs/ControllerGestures.js';
 
 class App{
-	constructor(){
-		const container = document.createElement( 'div' );
-		document.body.appendChild( container );
+    constructor(){
+        const container = document.createElement( 'div' );
+        document.body.appendChild( container );
         
         this.clock = new THREE.Clock();
         
-		this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 20 );
-		
-		this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.01, 20 );
+        
+        this.scene = new THREE.Scene();
         
         this.scene.add(this.camera);
        
-		this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
+        this.scene.add( new THREE.HemisphereLight( 0x606060, 0x404040 ) );
 
         const light = new THREE.DirectionalLight( 0xffffff );
         light.position.set( 1, 1, 1 ).normalize();
-		this.scene.add( light );
-			
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.scene.add( light );
+            
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
+        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         
-		container.appendChild( this.renderer.domElement );
+        container.appendChild( this.renderer.domElement );
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
         this.controls.target.set(0, 3.5, 0);
@@ -49,62 +49,62 @@ class App{
         this.setupXR();
         
         window.addEventListener('resize', this.resize.bind(this) );
-	}	
+    }   
     
     initScene(){
         this.loadingBar = new LoadingBar();
         
         this.assetsPath = '../../assets/';
         const loader = new GLTFLoader().setPath(this.assetsPath);
-		const self = this;
-		
-		// Load a GLTF resource
-		loader.load(
-			// resource URL
-			`Knight2.glb`,
-			// called when the resource is loaded
-			function ( gltf ) {
-				const object = gltf.scene.children[5];
-				
-				object.traverse(function(child){
-					if (child.isMesh){
+        const self = this;
+        
+        // Load a GLTF resource
+        loader.load(
+            // resource URL
+            `knight2.glb`,
+            // called when the resource is loaded
+            function ( gltf ) {
+                const object = gltf.scene.children[5];
+                
+                object.traverse(function(child){
+                    if (child.isMesh){
                         child.material.metalness = 0;
                         child.material.roughness = 1;
-					}
-				});
-				
-				const options = {
-					object: object,
-					speed: 0.5,
-					animations: gltf.animations,
-					clip: gltf.animations[0],
-					app: self,
-					name: 'Knight',
-					npc: false
-				};
-				
-				self.Knight = new Player(options);
-                self.Knight.object.visible = false;
-				
-				self.Knight.action = 'Dance';
-				const scale = 0.003;
-				self.Knight.object.scale.set(scale, scale, scale); 
-				
+                    }
+                });
+                
+                const options = {
+                    object: object,
+                    speed: 0.5,
+                    animations: gltf.animations,
+                    clip: gltf.animations[0],
+                    app: self,
+                    name: 'knight',
+                    npc: false
+                };
+                
+                self.knight = new Player(options);
+                self.knight.object.visible = false;
+                
+                self.knight.action = 'Dance';
+                const scale = 0.003;
+                self.knight.object.scale.set(scale, scale, scale); 
+                
                 self.loadingBar.visible = false;
-			},
-			// called while loading is progressing
-			function ( xhr ) {
+            },
+            // called while loading is progressing
+            function ( xhr ) {
 
-				self.loadingBar.progress = (xhr.loaded / xhr.total);
+                self.loadingBar.progress = (xhr.loaded / xhr.total);
 
-			},
-			// called when loading has errors
-			function ( error ) {
+            },
+            // called when loading has errors
+            function ( error ) {
 
-				console.log( 'An error happened' );
+                console.log( 'An error happened' );
 
-			}
-		);
+            }
+        );
         
         this.createUI();
     }
@@ -146,10 +146,10 @@ class App{
         this.gestures.addEventListener( 'tap', (ev)=>{
             //console.log( 'tap' ); 
             self.ui.updateElement('info', 'tap' );
-            if (!self.Knight.object.visible){
-                self.Knight.object.visible = true;
-                self.Knight.object.position.set( 0, -0.3, -0.5 ).add( ev.position );
-                self.scene.add( self.Knight.object ); 
+            if (!self.knight.object.visible){
+                self.knight.object.visible = true;
+                self.knight.object.position.set( 0, -0.3, -0.5 ).add( ev.position );
+                self.scene.add( self.knight.object ); 
             }
         });
         this.gestures.addEventListener( 'doubletap', (ev)=>{
@@ -163,38 +163,38 @@ class App{
         this.gestures.addEventListener( 'pan', (ev)=>{
             //console.log( ev );
             if (ev.initialise !== undefined){
-                self.startPosition = self.Knight.object.position.clone();
+                self.startPosition = self.knight.object.position.clone();
             }else{
                 const pos = self.startPosition.clone().add( ev.delta.multiplyScalar(3) );
-                self.Knight.object.position.copy( pos );
+                self.knight.object.position.copy( pos );
                 self.ui.updateElement('info', `pan x:${ev.delta.x.toFixed(3)}, y:${ev.delta.y.toFixed(3)}, x:${ev.delta.z.toFixed(3)}` );
             } 
         });
         this.gestures.addEventListener( 'swipe', (ev)=>{
             //console.log( ev );   
             self.ui.updateElement('info', `swipe ${ev.direction}` );
-            if (self.Knight.object.visible){
-                self.Knight.object.visible = false;
-                self.scene.remove( self.Knight.object ); 
+            if (self.knight.object.visible){
+                self.knight.object.visible = false;
+                self.scene.remove( self.knight.object ); 
             }
         });
         this.gestures.addEventListener( 'pinch', (ev)=>{
             //console.log( ev );  
             if (ev.initialise !== undefined){
-                self.startScale = self.Knight.object.scale.clone();
+                self.startScale = self.knight.object.scale.clone();
             }else{
                 const scale = self.startScale.clone().multiplyScalar(ev.scale);
-                self.Knight.object.scale.copy( scale );
+                self.knight.object.scale.copy( scale );
                 self.ui.updateElement('info', `pinch delta:${ev.delta.toFixed(3)} scale:${ev.scale.toFixed(2)}` );
             }
         });
         this.gestures.addEventListener( 'rotate', (ev)=>{
             //      sconsole.log( ev ); 
             if (ev.initialise !== undefined){
-                self.startQuaternion = self.Knight.object.quaternion.clone();
+                self.startQuaternion = self.knight.object.quaternion.clone();
             }else{
-                self.Knight.object.quaternion.copy( self.startQuaternion );
-                self.Knight.object.rotateY( ev.theta );
+                self.knight.object.quaternion.copy( self.startQuaternion );
+                self.knight.object.rotateY( ev.theta );
                 self.ui.updateElement('info', `rotate ${ev.theta.toFixed(3)}`  );
             }
         });
@@ -208,14 +208,14 @@ class App{
         this.renderer.setSize( window.innerWidth, window.innerHeight );  
     }
     
-	render( ) {   
+    render( ) {   
         const dt = this.clock.getDelta();
         this.stats.update();
         if ( this.renderer.xr.isPresenting ){
             this.gestures.update();
             this.ui.update();
         }
-        if ( this.Knight !== undefined ) this.Knight.update(dt);
+        if ( this.knight !== undefined ) this.knight.update(dt);
         this.renderer.render( this.scene, this.camera );
     }
 }

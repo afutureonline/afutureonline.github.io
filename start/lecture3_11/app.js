@@ -61,7 +61,7 @@ class App{
 		// Load a GLTF resource
 		loader.load(
 			// resource URL
-			`SelwayA10.glb`,
+			`Knight2.glb`,
 			// called when the resource is loaded
 			function ( gltf ) {
 				const object = gltf.scene.children[5];
@@ -79,16 +79,16 @@ class App{
 					animations: gltf.animations,
 					clip: gltf.animations[0],
 					app: self,
-					name: 'SelwayA10',
+					name: 'Knight',
 					npc: false
 				};
 				
-				self.SelwayA10 = new Player(options);
-                self.SelwayA10.object.visible = false;
+				self.Knight = new Player(options);
+                self.Knight.object.visible = false;
 				
-				self.SelwayA10.action = 'Dance';
+				self.Knight.action = 'Dance';
 				const scale = 0.003;
-				self.SelwayA10.object.scale.set(scale, scale, scale); 
+				self.Knight.object.scale.set(scale, scale, scale); 
 				
                 self.loadingBar.visible = false;
 			},
@@ -146,10 +146,10 @@ class App{
         this.gestures.addEventListener( 'tap', (ev)=>{
             //console.log( 'tap' ); 
             self.ui.updateElement('info', 'tap' );
-            if (!self.SelwayA10.object.visible){
-                self.SelwayA10.object.visible = true;
-                self.SelwayA10.object.position.set( 0, -0.3, -0.5 ).add( ev.position );
-                self.scene.add( self.SelwayA10.object ); 
+            if (!self.Knight.object.visible){
+                self.Knight.object.visible = true;
+                self.Knight.object.position.set( 0, -0.3, -0.5 ).add( ev.position );
+                self.scene.add( self.Knight.object ); 
             }
         });
         this.gestures.addEventListener( 'doubletap', (ev)=>{
@@ -163,38 +163,38 @@ class App{
         this.gestures.addEventListener( 'pan', (ev)=>{
             //console.log( ev );
             if (ev.initialise !== undefined){
-                self.startPosition = self.SelwayA10.object.position.clone();
+                self.startPosition = self.Knight.object.position.clone();
             }else{
                 const pos = self.startPosition.clone().add( ev.delta.multiplyScalar(3) );
-                self.SelwayA10.object.position.copy( pos );
+                self.Knight.object.position.copy( pos );
                 self.ui.updateElement('info', `pan x:${ev.delta.x.toFixed(3)}, y:${ev.delta.y.toFixed(3)}, x:${ev.delta.z.toFixed(3)}` );
             } 
         });
         this.gestures.addEventListener( 'swipe', (ev)=>{
             //console.log( ev );   
             self.ui.updateElement('info', `swipe ${ev.direction}` );
-            if (self.SelwayA10.object.visible){
-                self.SelwayA10.object.visible = false;
-                self.scene.remove( self.SelwayA10.object ); 
+            if (self.Knight.object.visible){
+                self.Knight.object.visible = false;
+                self.scene.remove( self.Knight.object ); 
             }
         });
         this.gestures.addEventListener( 'pinch', (ev)=>{
             //console.log( ev );  
             if (ev.initialise !== undefined){
-                self.startScale = self.SelwayA10.object.scale.clone();
+                self.startScale = self.Knight.object.scale.clone();
             }else{
                 const scale = self.startScale.clone().multiplyScalar(ev.scale);
-                self.SelwayA10.object.scale.copy( scale );
+                self.Knight.object.scale.copy( scale );
                 self.ui.updateElement('info', `pinch delta:${ev.delta.toFixed(3)} scale:${ev.scale.toFixed(2)}` );
             }
         });
         this.gestures.addEventListener( 'rotate', (ev)=>{
             //      sconsole.log( ev ); 
             if (ev.initialise !== undefined){
-                self.startQuaternion = self.SelwayA10.object.quaternion.clone();
+                self.startQuaternion = self.Knight.object.quaternion.clone();
             }else{
-                self.SelwayA10.object.quaternion.copy( self.startQuaternion );
-                self.SelwayA10.object.rotateY( ev.theta );
+                self.Knight.object.quaternion.copy( self.startQuaternion );
+                self.Knight.object.rotateY( ev.theta );
                 self.ui.updateElement('info', `rotate ${ev.theta.toFixed(3)}`  );
             }
         });
@@ -215,7 +215,7 @@ class App{
             this.gestures.update();
             this.ui.update();
         }
-        if ( this.SelwayA10 !== undefined ) this.SelwayA10.update(dt);
+        if ( this.Knight !== undefined ) this.Knight.update(dt);
         this.renderer.render( this.scene, this.camera );
     }
 }

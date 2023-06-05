@@ -158,16 +158,39 @@ class App{
         const session = this.renderer.xr.getSession();
 
         session.requestReferenceSpace( 'viewer' ).then( function( referenceSpace )
-    }
+    {
     		session.requestHitTestSource( { space: referenceSpace }).then(
-    			function( source) {
+    			function( source ) {
     				self.hitTestSource = source;
     			})
 
     });
-    
+
+        session.addEventListener( 'end', function() {
+        	self.hitTestSourceRequested = false;
+        	self.hitTestSource = null;
+        	self.referenceSpace = null;
+        });
+
+        	this.hitTestSourceRequested = true;
+
+        }
+
     getHitTestResults( frame ){
         
+        const hitTestResults = frame.getHitTestResults( this.hitTestSource );
+
+        if (hitTestResults.length){
+        	const referenceSpace = this.renderer.xr.getReferenceSpace();
+        	const hit = hitTestResults[0];
+        	const pose = hit.getPose( referenceSpace );
+
+        	this.reticle.visible = true;
+        	this.reticle.matrix.fromArray( pose.transform.matrix );
+        }else{
+        	this.reticle.visible = false;
+
+        }
     }
 
     render( timestamp, frame ) {
